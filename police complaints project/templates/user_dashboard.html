@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - User Dashboard{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 2rem; margin-bottom: 24px;">Welcome back, <span style="color: var(--primary-light);">{{ session.get('user_name') }}</span></h1>
+
+<div class="dashboard-grid">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active"><a href="#my-complaints" onclick="showTab('my-complaints')"><i class="fas fa-file-invoice"></i> My Complaints</a></li>
+            <li class="sidebar-item"><a href="#profile" onclick="showTab('profile')"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+            <li class="sidebar-item"><a href="#notifications" onclick="showTab('notifications')"><i class="fas fa-bell"></i> Notifications {% if notifications_count %}<span style="background: var(--danger); font-size: 0.75rem; color: white; padding: 2px 6px; border-radius: 50%; margin-left: 5px;">{{ notifications_count }}</span>{% endif %}</a></li>
+        </ul>
+    </div>
+    
+    <!-- Dashboard Contents -->
+    <div class="dashboard-content">
+        
+        <!-- Tab 1: My Complaints -->
+        <div id="tab-my-complaints" class="dashboard-tab">
+            <div class="card" style="padding: 24px;">
+                <h2 style="font-size: 1.4rem; margin-bottom: 20px;"><i class="fas fa-folder-open"></i> Submitted Complaints</h2>
+                
+                {% if complaints %}
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Complaint ID</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Created Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in complaints %}
+                            <tr>
+                                <td><code style="color: var(--primary-light); font-weight: 600;">{{ c.id }}</code></td>
+                                <td>{{ c.title }}</td>
+                                <td>{{ c.category }}</td>
+                                <td>{{ c.created_at[:10] }}</td>
+                                <td>
+                                    <span class="badge badge-{{ 'submitted' if c.status == 'Submitted' else 'review' if c.status == 'Under Review' else 'progress' if c.status == 'In Progress' else 'resolved' }}">
+                                        {{ c.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('track_view', complaint_id=c.id) }}" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem;">
+                                        <i class="fas fa-eye"></i> Track
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 40px 0;">
+                    <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <p style="color: var(--text-muted);">You haven't submitted any complaints yet.</p>
+                    <a href="{{ url_for('submit_complaint_view') }}" class="btn btn-primary" style="margin-top: 16px;">File Your First Complaint</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Tab 2: Profile Update -->
+        <div id="tab-profile" class="dashboard-tab" style="display: none;">
+            <div class="card" style="max-width: 500px; padding: 24px;">
+                <h2 style="font-size: 1.4rem; margin-bottom: 20px;"><i class="fas fa-user-gear"></i> Update Profile Information</h2>
+                <form action="{{ url_for('update_profile') }}" method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="profile_name">Full Name</label>
+                        <input class="form-control" type="text" id="profile_name" name="name" value="{{ user.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="profile_mobile">Mobile Number</label>
+                        <input class="form-control" type="tel" id="profile_mobile" name="mobile" value="{{ user.mobile or '' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab 3: Notifications -->
+        <div id="tab-notifications" class="dashboard-tab" style="display: none;">
+            <div class="card" style="padding: 24px;">
+                <h2 style="font-size: 1.4rem; margin-bottom: 20px;"><i class="fas fa-bell"></i> Alerts & Notifications</h2>
+                
+                {% if notifications %}
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    {% for n in notifications %}
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--bg-card-border); padding: 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="font-weight: 500; font-size: 0.95rem;">{{ n.message }}</p>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Complaint ID: {{ n.complaint_id }} | {{ n.created_at }}</span>
+                        </div>
+                        {% if not n.read_status %}
+                        <form action="{{ url_for('mark_notification', notification_id=n.id) }}" method="POST">
+                            <button class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem; border-color: var(--success); color: var(--success);">
+                                <i class="fas fa-check"></i> Dismiss
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 40px 0;">
+                    <i class="fas fa-bell-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <p style="color: var(--text-muted);">You have no notifications at this time.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(tabId) {
+    // Hide all tabs
+    document.querySelectorAll('.dashboard-tab').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    // Show active tab
+    document.getElementById('tab-' + tabId).style.display = 'block';
+    
+    // Toggle active classes on sidebar menu
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.querySelector('a').getAttribute('href') === '#' + tabId) {
+            item.classList.add('active');
+        }
+    });
+}
+
+// Auto-activate tab from URL hash if present
+window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.substring(1);
+    if (hash && document.getElementById('tab-' + hash)) {
+        showTab(hash);
+    }
+});
+</script>
+{% endblock %}

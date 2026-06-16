@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-lock"></i> 100% Secure & Confidential
+        </div>
+        <h1 class="hero-title">Helping Students Report Issues <span>Safely & Easily</span></h1>
+        <p class="hero-subtitle">
+            Report bullying, harassment, school/college issues, safety hazards, and civic concerns safely. File an anonymous report or track your case progression with complete transparency.
+        </p>
+        <div class="hero-actions">
+            <a href="{{ url_for('submit_complaint_view') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-file-pen"></i> Submit a Complaint
+            </a>
+            <a href="{{ url_for('track_view') }}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-magnifying-glass"></i> Track Complaint
+            </a>
+        </div>
+    </div>
+    
+    <div class="hero-image">
+        <!-- SVG Graphic illustrating student safety/security -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+            <defs>
+                <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366f1" />
+                    <stop offset="100%" stop-color="#a855f7" />
+                </linearGradient>
+                <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(99, 102, 241, 0.3)" />
+                    <stop offset="100%" stop-color="rgba(236, 72, 153, 0.0)" />
+                </linearGradient>
+            </defs>
+            <circle cx="250" cy="250" r="180" fill="url(#glowGrad)" />
+            <path d="M250 80 L370 130 C370 260 250 380 250 420 C250 380 130 260 130 130 Z" fill="url(#shieldGrad)" opacity="0.9" />
+            <path d="M250 110 L340 148 C340 240 250 340 250 380 C250 340 160 240 160 148 Z" fill="#0a0e1a" />
+            <circle cx="250" cy="220" r="45" fill="none" stroke="#a855f7" stroke-width="6" />
+            <path d="M200 320 Q250 280 300 320" fill="none" stroke="#a855f7" stroke-width="6" stroke-linecap="round" />
+            <circle cx="250" cy="220" r="15" fill="#6366f1" />
+            <rect x="235" y="245" width="30" height="40" rx="5" fill="#6366f1" />
+        </svg>
+    </div>
+</section>
+
+
+<!-- Features Section -->
+<section style="margin: 80px 0;">
+    <div class="section-header">
+        <h2 class="section-title">Key Platform Features</h2>
+        <p class="section-subtitle">Designed to remove fear, simplify reporting, and ensure absolute integrity.</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="card feature-card">
+            <div class="feature-icon"><i class="fas fa-user-secret"></i></div>
+            <h3>100% Anonymous Mode</h3>
+            <p>File a complaint without sharing your identity. Our platform ensures no personal records are saved with anonymous filings.</p>
+        </div>
+        <div class="card feature-card">
+            <div class="feature-icon"><i class="fas fa-radar"></i></div>
+            <h3>Real-Time Tracking</h3>
+            <p>Know exactly where your complaint stands with our visual pipeline, transitioning from Submitted to Resolution.</p>
+        </div>
+        <div class="card feature-card">
+            <div class="feature-icon"><i class="fas fa-file-shield"></i></div>
+            <h3>Secure Evidence Upload</h3>
+            <p>Upload files, photos, or documents securely to substantiate your claims. All uploaded media is encrypted.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

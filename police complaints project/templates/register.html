@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - Register{% endblock %}
+
+{% block content %}
+<div class="card form-container">
+    <h1 class="form-title">Create Account</h1>
+    <p class="form-subtitle">Register to submit, track, and update your complaints.</p>
+    
+    <form action="{{ url_for('register') }}" method="POST">
+        <div class="form-group">
+            <label class="form-label" for="name">Full Name</label>
+            <input class="form-control" type="text" id="name" name="name" required placeholder="Enter your full name">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-control" type="email" id="email" name="email" required placeholder="name@school.com">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="mobile">Mobile Number (Optional)</label>
+            <input class="form-control" type="tel" id="mobile" name="mobile" placeholder="e.g. +1 1234567890">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" type="password" id="password" name="password" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+            <i class="fas fa-user-plus"></i> Create Account
+        </button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+        Already have an account? <a href="{{ url_for('login') }}" style="color: var(--primary-light); font-weight: 600;">Sign In</a>
+    </p>
+</div>
+{% endblock %}

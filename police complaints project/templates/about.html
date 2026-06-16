@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - About Project{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 40px auto; padding: 40px;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 24px; text-align: center; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        About ReportSafe
+    </h1>
+    
+    <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.8;">
+        Many students and youth hesitate to report issues such as bullying, harassment, and unsafe environments due to fear of retaliation, lack of awareness, or complex reporting systems. 
+        <strong>ReportSafe</strong> is built to simplify this process and protect student safety.
+    </p>
+
+    <h2 style="font-size: 1.6rem; margin-top: 32px; margin-bottom: 16px; color: var(--white);">
+        Our Safety Reporting Protocols
+    </h2>
+    <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
+        <li style="display: flex; gap: 12px; align-items: flex-start;">
+            <i class="fas fa-check-circle" style="color: var(--success); margin-top: 4px;"></i>
+            <span><strong>Anonymous Submissions:</strong> When filing anonymously, your email, name, and contact details are completely hidden. The system generates a single token key for you to track updates.</span>
+        </li>
+        <li style="display: flex; gap: 12px; align-items: flex-start;">
+            <i class="fas fa-check-circle" style="color: var(--success); margin-top: 4px;"></i>
+            <span><strong>Encrypted Storage:</strong> Sensitive details and attachments are secured to prevent unauthorized access.</span>
+        </li>
+        <li style="display: flex; gap: 12px; align-items: flex-start;">
+            <i class="fas fa-check-circle" style="color: var(--success); margin-top: 4px;"></i>
+            <span><strong>Fast Review Action:</strong> Administrators review submissions immediately and route them to relevant authorities (school heads, civic bodies, or counselors).</span>
+        </li>
+    </ul>
+
+    <h2 style="font-size: 1.6rem; margin-top: 32px; margin-bottom: 16px; color: var(--white);">
+        Frequently Asked Questions
+    </h2>
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--bg-card-border); padding: 20px; border-radius: 10px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--primary-light);">Who can submit a report?</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Students, parents, and youth aged 13-25 who are facing bullying, harassment, safety issues at school/college, or civic issues in their neighborhoods.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--bg-card-border); padding: 20px; border-radius: 10px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--primary-light);">What happens after I submit a complaint?</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">You will receive a unique tracking ID. An admin will check your complaint, mark it 'Under Review', contact relevant stakeholders, and keep you updated on the progress.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--bg-card-border); padding: 20px; border-radius: 10px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--primary-light);">Is my data completely secure?</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Yes, we utilize top security hashes and standards to guard database integrity and prioritize data privacy.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

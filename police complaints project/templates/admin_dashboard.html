@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h1 style="font-size: 2rem;">System <span style="color: var(--secondary-light);">Administrator</span> Portal</h1>
+    <a href="#" onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> Print Report</a>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-row" style="margin-bottom: 32px;">
+    <div class="card kpi-card">
+        <div class="kpi-info">
+            <h4>Total Recieved</h4>
+            <p>{{ stats.total }}</p>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-folder"></i></div>
+    </div>
+    <div class="card kpi-card">
+        <div class="kpi-info">
+            <h4>Submitted</h4>
+            <p>{{ stats.submitted }}</p>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-paper-plane"></i></div>
+    </div>
+    <div class="card kpi-card">
+        <div class="kpi-info">
+            <h4>Under Investigation</h4>
+            <p>{{ stats.review + stats.progress }}</p>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div>
+    </div>
+    <div class="card kpi-card">
+        <div class="kpi-info">
+            <h4>Resolved</h4>
+            <p>{{ stats.resolved }}</p>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-circle-check"></i></div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="charts-grid" style="margin-bottom: 32px;">
+    <div class="card">
+        <h3 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-chart-pie"></i> Complaints by Category</h3>
+        <div style="max-height: 250px; display: flex; justify-content: center;">
+            <canvas id="categoryChart" width="250" height="250"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <h3 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-chart-bar"></i> Complaints by Status</h3>
+        <div style="max-height: 250px; display: flex; justify-content: center;">
+            <canvas id="statusChart" width="300" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Complaints Administration List -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <h3 style="font-size: 1.3rem;"><i class="fas fa-list-check"></i> Manage Complaints</h3>
+        
+        <!-- Live Filters -->
+        <div class="filters-bar">
+            <input type="text" id="adminSearchInput" onkeyup="filterComplaintsTable()" class="search-input" placeholder="Search by ID or title...">
+            
+            <select id="adminCategorySelect" onchange="filterComplaintsTable()" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="harassment">Harassment</option>
+                <option value="bullying">Bullying</option>
+                <option value="safety">Safety Issues</option>
+                <option value="college">School/College Related</option>
+                <option value="civic">Civic Issues</option>
+            </select>
+            
+            <select id="adminStatusSelect" onchange="filterComplaintsTable()" class="filter-select">
+                <option value="">All Statuses</option>
+                <option value="submitted">Submitted</option>
+                <option value="under review">Under Review</option>
+                <option value="in progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="data-table-container">
+        <table class="data-table" id="adminComplaintsTable">
+            <thead>
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Category</th>
+                    <th>Subject</th>
+                    <th>Filer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in complaints %}
+                <tr class="complaint-row" data-category="{{ c.category.lower() }}" data-status="{{ c.status.lower() }}">
+                    <td><code style="color: var(--primary-light); font-weight: 700;">{{ c.id }}</code></td>
+                    <td>{{ c.category }}</td>
+                    <td class="complaint-title">{{ c.title }}</td>
+                    <td>
+                        {% if c.anonymous %}
+                        <span style="color: var(--text-muted);"><i class="fas fa-user-secret"></i> Anonymous</span>
+                        {% else %}
+                        <span>{{ c.user_name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ c.created_at[:10] }}</td>
+                    <td>
+                        <span class="badge badge-{{ 'submitted' if c.status == 'Submitted' else 'review' if c.status == 'Under Review' else 'progress' if c.status == 'In Progress' else 'resolved' }}">
+                            {{ c.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="viewComplaintDetails('{{ c.id }}', '{{ c.category }}', '{{ c.title|escape }}', '{{ c.description|replace('\n', '\\n')|escape }}', '{{ c.status }}', '{{ c.file_path or '' }}', '{{ c.user_name if not c.anonymous else 'Anonymous' }}')" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.85rem;">
+                            <i class="fas fa-pencil"></i> Review
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for updating Complaint Status & Adding Comments -->
+<div class="modal" id="adminReviewModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('adminReviewModal')">&times;</span>
+        <h2 style="font-size: 1.4rem; margin-bottom: 16px; color: var(--primary-light);" id="modalComplaintId">Complaint Details</h2>
+        
+        <div style="max-height: 400px; overflow-y: auto; margin-bottom: 24px; padding-right: 8px;">
+            <p><strong>Submitted By:</strong> <span id="modalFiler">Anonymous</span></p>
+            <p style="margin-top: 8px;"><strong>Category:</strong> <span id="modalCategory">Harassment</span></p>
+            <p style="margin-top: 8px;"><strong>Subject:</strong> <span id="modalTitle" style="font-weight: 600;">Title of issue</span></p>
+            <p style="margin-top: 12px; font-weight: 600; font-size: 0.9rem;">Description:</p>
+            <div id="modalDescription" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; font-size: 0.9rem; color: var(--text-muted); margin-top: 6px; white-space: pre-wrap;">
+                Detailed description content
+            </div>
+            
+            <div id="modalEvidenceContainer" style="margin-top: 16px;">
+                <!-- Link to attached file if present -->
+            </div>
+        </div>
+
+        <form action="{{ url_for('admin_update_complaint') }}" method="POST" style="border-top: 1px solid var(--bg-card-border); padding-top: 20px;">
+            <input type="hidden" name="complaint_id" id="formComplaintId">
+            
+            <div class="form-group">
+                <label class="form-label" for="updateStatus">Update Status</label>
+                <select class="form-control" name="status" id="modalStatusSelect" required>
+                    <option value="Submitted">Submitted</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="adminComment">Add Feedback / Comment</label>
+                <textarea class="form-control" name="comment" id="adminComment" rows="3" placeholder="Explain the investigation steps, updates, or resolution details to the student..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('adminReviewModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Complaint</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load Charts from backend variables
+document.addEventListener('DOMContentLoaded', () => {
+    const categoriesData = {{ chart_categories | tojson }};
+    const statusData = {{ chart_status | tojson }};
+    initAdminCharts(categoriesData, statusData);
+});
+
+// Search and filtering of complaints table
+function filterComplaintsTable() {
+    const searchQuery = document.getElementById('adminSearchInput').value.toLowerCase();
+    const categoryQuery = document.getElementById('adminCategorySelect').value.toLowerCase();
+    const statusQuery = document.getElementById('adminStatusSelect').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('.complaint-row');
+    
+    rows.forEach(row => {
+        const id = row.cells[0].textContent.toLowerCase();
+        const title = row.querySelector('.complaint-title').textContent.toLowerCase();
+        const category = row.getAttribute('data-category');
+        const status = row.getAttribute('data-status');
+        
+        const matchesSearch = id.includes(searchQuery) || title.includes(searchQuery);
+        const matchesCategory = !categoryQuery || category.includes(categoryQuery);
+        const matchesStatus = !statusQuery || status === statusQuery;
+        
+        if (matchesSearch && matchesCategory && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Populate modal fields
+function viewComplaintDetails(id, category, title, description, status, filePath, filer) {
+    document.getElementById('modalComplaintId').textContent = 'Reviewing ID: ' + id;
+    document.getElementById('formComplaintId').value = id;
+    document.getElementById('modalFiler').textContent = filer;
+    document.getElementById('modalCategory').textContent = category;
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDescription').textContent = description;
+    document.getElementById('modalStatusSelect').value = status;
+    
+    const evidenceContainer = document.getElementById('modalEvidenceContainer');
+    if (filePath) {
+        evidenceContainer.innerHTML = `
+            <p style="font-weight:600; font-size:0.9rem;">Evidence/Attached Document:</p>
+            <a href="/static/uploads/\${filePath}" target="_blank" class="btn btn-secondary btn-sm" style="margin-top: 8px; border-color: var(--primary-light); color: var(--primary-light);">
+                <i class="fas fa-paperclip"></i> View Attached Evidence
+            </a>
+        `;
+    } else {
+        evidenceContainer.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-ban"></i> No attachments submitted.</p>';
+    }
+    
+    openModal('adminReviewModal');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - Contact Us{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; margin: 40px 0;">
+    <!-- Contact Form -->
+    <div class="card">
+        <h2 style="font-size: 1.6rem; margin-bottom: 8px;"><i class="fas fa-paper-plane"></i> Get in Touch</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">Have questions about the platform or need technical assistance? Send us a message.</p>
+        
+        <form action="#" onclick="event.preventDefault(); showToast('Thank you! Your inquiry was sent successfully. We will respond within 24 hours.', 'success')">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="contact_name">Full Name</label>
+                    <input class="form-control" type="text" id="contact_name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="contact_email">Email Address</label>
+                    <input class="form-control" type="email" id="contact_email" placeholder="john@example.com" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="contact_subject">Subject</label>
+                <input class="form-control" type="text" id="contact_subject" placeholder="What are you inquiring about?" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="contact_message">Your Message</label>
+                <textarea class="form-control" id="contact_message" rows="5" placeholder="Type your message details here..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Send Message <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Helplines & Info -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.03);">
+            <h3 style="color: var(--danger); font-size: 1.2rem; margin-bottom: 12px;">
+                <i class="fas fa-circle-exclamation"></i> Emergency Helplines
+            </h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+                If you are in immediate physical danger, please contact local law enforcement or the helpline services below directly:
+            </p>
+            
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem;">
+                <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <span>Child Helpline</span>
+                    <strong style="color: var(--danger);">1098</strong>
+                </li>
+                <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <span>Cyber Crime Cell</span>
+                    <strong style="color: var(--danger);">1930</strong>
+                </li>
+                <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <span>Student Mental Health Helpline</span>
+                    <strong style="color: var(--danger);">1800-891-4416</strong>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 1.2rem; margin-bottom: 12px;"><i class="fas fa-building"></i> Office Address</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+                ReportSafe Initiative Head Office<br>
+                Tech City Complex, Sector 4<br>
+                New Delhi, 110001<br>
+                India
+            </p>
+            <p style="font-size: 0.9rem; margin-top: 12px;">
+                <i class="fas fa-envelope" style="color: var(--primary-light);"></i> support@reportsafe.org
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

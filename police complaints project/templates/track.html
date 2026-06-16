@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}ReportSafe - Track Complaint{% endblock %}
+
+{% block content %}
+<div class="card form-container" style="max-width: 600px;">
+    <h1 class="form-title">Track Complaint Status</h1>
+    <p class="form-subtitle">Enter your unique tracking ID to view real-time progression.</p>
+    
+    <form action="{{ url_for('track_view') }}" method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
+        <input class="form-control" type="text" name="complaint_id" value="{{ complaint_id or '' }}" required placeholder="COMP-YYYYMMDD-XXXX">
+        <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+            <i class="fas fa-magnifying-glass"></i> Track
+        </button>
+    </form>
+</div>
+
+{% if complaint %}
+<div class="card track-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bg-card-border); padding-bottom: 16px; margin-bottom: 24px;">
+        <div>
+            <h2 style="font-size: 1.3rem;">ID: {{ complaint.id }}</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Category: {{ complaint.category }}</p>
+        </div>
+        <span class="badge badge-{{ 'submitted' if complaint.status == 'Submitted' else 'review' if complaint.status == 'Under Review' else 'progress' if complaint.status == 'In Progress' else 'resolved' }}">
+            {{ complaint.status }}
+        </span>
+    </div>
+
+    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Subject: {{ complaint.title }}</h3>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 32px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px;">
+        {{ complaint.description }}
+    </p>
+
+    <h3 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-route"></i> Tracking Progress Timeline</h3>
+    <div class="timeline">
+        <!-- Step 1: Submitted -->
+        <div class="timeline-item completed">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Submitted</div>
+                <div class="timeline-date">Report received by ReportSafe database securely.</div>
+            </div>
+        </div>
+
+        <!-- Step 2: Under Review -->
+        <div class="timeline-item {% if complaint.status in ['Under Review', 'In Progress', 'Resolved'] %}completed{% else %}active{% endif %}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Under Review</div>
+                <div class="timeline-date">Administrator assignment & initial review.</div>
+            </div>
+        </div>
+
+        <!-- Step 3: In Progress -->
+        <div class="timeline-item {% if complaint.status in ['In Progress', 'Resolved'] %}completed{% elif complaint.status == 'Under Review' %}active{% endif %}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">In Progress</div>
+                <div class="timeline-date">Action being taken, school/college/civic stakeholders notified.</div>
+            </div>
+        </div>
+
+        <!-- Step 4: Resolved -->
+        <div class="timeline-item {% if complaint.status == 'Resolved' %}completed{% elif complaint.status == 'In Progress' %}active{% endif %}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <div class="timeline-title">Resolved</div>
+                <div class="timeline-date">Resolution reached and confirmed. Feedback archived.</div>
+            </div>
+        </div>
+    </div>
+
+    {% if comments %}
+    <h3 style="font-size: 1.1rem; margin-top: 40px; margin-bottom: 16px;"><i class="fas fa-comments"></i> Admin Updates & Comments</h3>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for comment in comments %}
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--bg-card-border); padding: 16px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--primary-light); margin-bottom: 6px;">
+                <strong>Admin Staff</strong>
+                <span>{{ comment.created_at }}</span>
+            </div>
+            <p style="font-size: 0.9rem;">{{ comment.comment_text }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% elif search_made %}
+<div class="card form-container" style="max-width: 600px; text-align: center; border-color: var(--danger);">
+    <i class="fas fa-circle-xmark" style="font-size: 3rem; color: var(--danger); margin-bottom: 16px;"></i>
+    <h3>No Complaint Found</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">
+        We couldn't find a complaint matching that ID. Please double check the ID format (e.g. COMP-20260605-ABCD) and try again.
+    </p>
+</div>
+{% endif %}
+{% endblock %}

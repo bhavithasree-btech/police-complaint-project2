@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ReportSafe - Student Complaint Portal{% endblock %}</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ChartJS for dashboards -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header>
+        <div class="container nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <i class="fas fa-shield-halved"></i> ReportSafe
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('track_view') }}">Track Complaint</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+                {% if session.get('user_id') %}
+                    {% if session.get('role') == 'admin' %}
+                        <li><a href="{{ url_for('admin_dashboard') }}">Admin Panel</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+            <div class="nav-auth">
+                {% if session.get('user_id') %}
+                    <span class="user-greeting" style="margin-right: 10px; font-weight: 600; color: var(--primary-light);">
+                        <i class="fas fa-user-circle"></i> {{ session.get('user_name') }}
+                    </span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+                <a href="{{ url_for('submit_complaint_view') }}" class="btn btn-outline" style="border-radius: 50px;">
+                    <i class="fas fa-plus"></i> File Complaint
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Flask flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="toast-container" id="toast-container">
+                    {% for category, message in messages %}
+                        <div class="toast toast-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'warning' if category == 'warning' else 'info' }}">
+                            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' if category == 'danger' else 'exclamation-triangle' if category == 'warning' else 'info-circle' }}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: rgba(10, 14, 26, 0.9); border-top: 1px solid var(--bg-card-border); padding: 40px 0; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+        <div class="container">
+            <p style="margin-bottom: 12px; font-weight: 600; color: var(--text-main);">
+                "Helping Students Report Issues Safely and Easily Through Technology."
+            </p>
+            <p>&copy; 2026 ReportSafe Initiative. All details encrypted and stored securely.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
